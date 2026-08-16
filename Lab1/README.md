@@ -1,3 +1,4 @@
+![Топология сети CLOS в EVE-NG](../images/lab1.PNG)
 # План адресации Underlay и Overlay сетей (CLOS Топология)
 
 **Инфраструктурный пул (Underlay):** `10.0.0.0/16`  
