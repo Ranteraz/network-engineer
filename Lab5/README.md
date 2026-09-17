@@ -1,5 +1,5 @@
 # Лабораторная работа: Настройка Overlay на основе VxLAN EVPN для L2 связанности (L2 VNI)
-(../images/lab5.png)
+![Топология сети для BGP VxLAN EVPN](../images/lab5.png)
 ## 1. Цель работы
 настроить Overlay на основе VxLAN EVPN для L2 связанности между клиентами.
 
