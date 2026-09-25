@@ -1,6 +1,6 @@
 Лабораторная работа: Настроить маршрутизацию в рамках Overlay между клиентами.
 # IP-план для топологии Spine-Leaf (IS-IS / BGP EVPN / VXLAN L3)
-![Топология сети для BGP VxLAN EVPN](../images/lab7.png)
+![Топология сети для BGP VxLAN EVPN](../images/lab6.png)
 ## 1. Loopback-интерфейсы (Управляющие адреса /32)
 * **Loopback0:** Маршрутизация (IS-IS, BGP Router ID, Peering)
 * **Loopback1:** VXLAN VTEP IP (только на Leaf-коммутаторах)
