@@ -1,4 +1,4 @@
-# 📑 Отчет по домашнему заданию: VXLAN. Multihoming
+# 📑 Лабораторная работа: VXLAN. Multihoming
 
 ## 🎯 1. Цель работы
 Настройка отказоустойчивого подключения клиентов. 
@@ -140,8 +140,7 @@ AS Path Attributes: Or-ID - Originator ID, C-LST - Cluster List, LL Nexthop - Li
 ```
 ---
 
-### 3.4. Проверка агрегации каналов ESI LAG и защиты от петель
-На стороне клиентов физические порты объединены в динамическую группу IEEE 802.3ad (`mode active`). На стороне фабрики развёрнут современный механизм мультихоминга `vlan-aware-bundle` с одинаковым ESI ID на парах коммутаторов доступа.
+### 3.4. Проверка агрегации каналов.
 
 Статус агрегированного канала на стороне клиента **PC1**:
 ```text
@@ -153,8 +152,6 @@ Port Channel Port-Channel1:
     --------------- -------------------------
        Ethernet1    waiting for LACP response
 ```
-**Вывод:** Фабрика успешно предотвратила образование L2-петель (Split Horizon / DF Election). Линейная скорость и обработка пакетов зафиксированы на `Ethernet2`, в то время как `Ethernet1` переведён в режим ожидания до востребования, предотвращая шторм вещания. Буферы сетевых карт чистые, ошибки `No buffer space available` устранены полностью.
-
 ---
 
 ### 3.5. Тестирование сквозной связности (Data Plane)
@@ -175,3 +172,20 @@ rtt min/avg/max/mdev = 5.358/42.258/154.653/26.278 ms
 Во время прохождения постоянного потока ICMP-трафика на коммутаторе `Leaf2` был принудительно отключен интерфейс к клиенту (`shutdown` на `Ethernet4`). В результате:
 1. Клиент `PC1` зафиксировал падение линка `Ethernet2` и мгновенно перевёл заблокированный до этого интерфейс `Ethernet1` в статус **`Active`**.
 2. Потери пакетов в процессе переключения не зафиксировано (выпало 0 пакетов)
+```
+PC1#show port-channel
+Port Channel Port-Channel1:
+  Active Ports: Ethernet2
+  Configured, but inactive ports:
+       Port         Reason
+    --------------- -------------------------
+       Ethernet1    waiting for LACP response
+
+PC1#show port-channel
+Port Channel Port-Channel1:
+  Active Ports: Ethernet1
+  Configured, but inactive ports:
+       Port         Reason
+    --------------- -----------------------------------------
+       Ethernet2    link down while waiting for LACP response
+```
