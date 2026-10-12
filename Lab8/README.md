@@ -553,3 +553,100 @@
 	 5     *  *  *
 	 6   *172.16.2.2   140.511 ms (ICMP type:3, code:3, Destination port unreachable)
 ```
+## Исправления по замечаниям к лабораторной работе
+
+### 1. Текущая конфигурация внешнего маршрутизатора (localhost)
+
+Ниже представлен фактический вывод конфигурации интерфейсов устройства FW
+
+```text
+localhost#show running-config interface Ethernet 1-2
+interface Ethernet1
+   description Link_to_Leaf3_Eth3_VRF_A
+   no switchport
+   ip address 10.255.1.2/30
+interface Ethernet2
+   description Link_to_Leaf3_Eth4_VRF_B
+   no switchport
+   ip address 10.255.2.2/30
+```
+---
+### 2. Скорректированная конфигурация BGP EVPN на Leaf 
+
+
+**Узел leaf1:**
+```text
+leaf1(config)#show running-config section router bgp
+router bgp 65000
+   router-id 10.0.0.1
+   no bgp default ipv4-unicast
+   neighbor SPINES-EVPN peer group
+   neighbor SPINES-EVPN remote-as 65000
+   neighbor SPINES-EVPN update-source Loopback0
+   neighbor SPINES-EVPN send-community extended
+   neighbor 10.0.0.11 peer group SPINES-EVPN
+   neighbor 10.0.0.12 peer group SPINES-EVPN
+   !
+   address-family evpn
+      neighbor SPINES-EVPN activate
+   !
+   vrf VRF_A
+      rd 10.0.0.1:50001
+      route-target import evpn 50001:50001
+      route-target export evpn 50001:50001
+      network 192.168.1.0/24
+```
+
+**Узел leaf2:**
+```text
+leaf2(config)#show running-config section router bgp
+router bgp 65000
+   router-id 10.0.0.2
+   no bgp default ipv4-unicast
+   neighbor SPINES-EVPN peer group
+   neighbor SPINES-EVPN remote-as 65000
+   neighbor SPINES-EVPN update-source Loopback0
+   neighbor SPINES-EVPN send-community extended
+   neighbor 10.0.0.11 peer group SPINES-EVPN
+   neighbor 10.0.0.12 peer group SPINES-EVPN
+   !
+   address-family evpn
+      neighbor SPINES-EVPN activate
+   !
+   vrf VRF_B
+      rd 10.0.0.2:50002
+      route-target import evpn 50002:50002
+      route-target export evpn 50002:50002
+      network 172.16.2.0/24
+```
+---
+
+### 3. Таблицы маршрутизации (IP Routing Table) после применения суммарных префиксов
+
+**Таблица маршрутизации leaf1 (VRF_A):**
+```text
+leaf1#show ip route vrf VRF_A
+
+Gateway of last resort is not set
+
+ S        10.1.0.0/16
+           directly connected, Null0
+ B I      172.16.0.0/16 [200/0]
+           via VTEP 10.0.1.3 VNI 50001 router-mac 50:00:00:72:8b:31 local-interface Vxlan1
+ C        192.168.1.0/24
+           directly connected, Vlan10
+```
+
+**Таблица маршрутизации leaf2 (VRF_B):**
+```text
+leaf2(config)#show ip route vrf VRF_B
+
+Gateway of last resort is not set
+
+ S        10.2.0.0/16
+           directly connected, Null0
+ C        172.16.2.0/24
+           directly connected, Vlan20
+ B I      192.168.0.0/16 [200/0]
+           via VTEP 10.0.1.3 VNI 50002 router-mac 50:00:00:72:8b:31 local-interface Vxlan1
+```
