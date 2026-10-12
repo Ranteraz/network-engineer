@@ -391,7 +391,97 @@
 	 *        RD: 10.0.0.1:50001 ip-prefix 192.168.1.0/24
 									 10.0.1.1              -       100     0       i Or-ID: 10.0.0.1 C-LST: 10.0.0.12
 	```
-### Firewell/Router	
+### Border leaf and Firewell/Router	
+Тестовый пинг транзитных линков напрямую с шлюза
+	```
+	leaf3#ping vrf VRF_A 10.255.1.2
+	PING 10.255.1.2 (10.255.1.2) 72(100) bytes of data.
+	80 bytes from 10.255.1.2: icmp_seq=1 ttl=64 time=100 ms
+	80 bytes from 10.255.1.2: icmp_seq=2 ttl=64 time=80.5 ms
+	80 bytes from 10.255.1.2: icmp_seq=3 ttl=64 time=66.1 ms
+	80 bytes from 10.255.1.2: icmp_seq=4 ttl=64 time=46.4 ms
+	80 bytes from 10.255.1.2: icmp_seq=5 ttl=64 time=10.2 ms
+
+	--- 10.255.1.2 ping statistics ---
+	5 packets transmitted, 5 received, 0% packet loss, time 105ms
+	rtt min/avg/max/mdev = 10.184/60.678/100.115/30.761 ms, pipe 5, ipg/ewma 26.270/78.109 ms
+	leaf3#ping vrf VRF_B 10.255.2.2
+	PING 10.255.2.2 (10.255.2.2) 72(100) bytes of data.
+	80 bytes from 10.255.2.2: icmp_seq=1 ttl=64 time=57.9 ms
+	80 bytes from 10.255.2.2: icmp_seq=2 ttl=64 time=40.2 ms
+	80 bytes from 10.255.2.2: icmp_seq=3 ttl=64 time=27.1 ms
+	80 bytes from 10.255.2.2: icmp_seq=4 ttl=64 time=9.50 ms
+	80 bytes from 10.255.2.2: icmp_seq=5 ttl=64 time=25.0 ms
+
+	--- 10.255.2.2 ping statistics ---
+	5 packets transmitted, 5 received, 0% packet loss, time 103ms
+	rtt min/avg/max/mdev = 9.496/31.932/57.869/16.227 ms, pipe 4, ipg/ewma 25.784/44.045 ms
+	leaf3#
+	```
+	```
+	leaf3#show ip route vrf VRF_A
+
+	VRF: VRF_A
+	Source Codes:
+		   C - connected, S - static, K - kernel,
+		   O - OSPF, O IA - OSPF inter area, O E1 - OSPF external type 1,
+		   O E2 - OSPF external type 2, O N1 - OSPF NSSA external type 1,
+		   O N2 - OSPF NSSA external type2, O3 - OSPFv3,
+		   O3 IA - OSPFv3 inter area, O3 E1 - OSPFv3 external type 1,
+		   O3 E2 - OSPFv3 external type 2,
+		   O3 N1 - OSPFv3 NSSA external type 1,
+		   O3 N2 - OSPFv3 NSSA external type2, B - Other BGP Routes,
+		   B I - iBGP, B E - eBGP, R - RIP, I L1 - IS-IS level 1,
+		   I L2 - IS-IS level 2, A B - BGP Aggregate,
+		   A O - OSPF Summary, NG - Nexthop Group Static Route,
+		   V - VXLAN Control Service, M - Martian,
+		   DH - DHCP client installed default route,
+		   DP - Dynamic Policy Route, L - VRF Leaked,
+		   G  - gRIBI, RC - Route Cache Route,
+		   CL - CBF Leaked Route
+
+	Gateway of last resort is not set
+
+	 C        10.255.1.0/30
+			   directly connected, Vlan101
+	 S        172.16.0.0/16 [1/0]
+			   via 10.255.1.2, Vlan101
+	 B I      192.168.1.0/24 [200/0]
+			   via VTEP 10.0.1.1 VNI 50001 router-mac 00:11:22:33:44:55 local-interface Vxlan1
+
+	leaf3#show ip route vrf VRF_B
+
+	VRF: VRF_B
+	Source Codes:
+		   C - connected, S - static, K - kernel,
+		   O - OSPF, O IA - OSPF inter area, O E1 - OSPF external type 1,
+		   O E2 - OSPF external type 2, O N1 - OSPF NSSA external type 1,
+		   O N2 - OSPF NSSA external type2, O3 - OSPFv3,
+		   O3 IA - OSPFv3 inter area, O3 E1 - OSPFv3 external type 1,
+		   O3 E2 - OSPFv3 external type 2,
+		   O3 N1 - OSPFv3 NSSA external type 1,
+		   O3 N2 - OSPFv3 NSSA external type2, B - Other BGP Routes,
+		   B I - iBGP, B E - eBGP, R - RIP, I L1 - IS-IS level 1,
+		   I L2 - IS-IS level 2, A B - BGP Aggregate,
+		   A O - OSPF Summary, NG - Nexthop Group Static Route,
+		   V - VXLAN Control Service, M - Martian,
+		   DH - DHCP client installed default route,
+		   DP - Dynamic Policy Route, L - VRF Leaked,
+		   G  - gRIBI, RC - Route Cache Route,
+		   CL - CBF Leaked Route
+
+	Gateway of last resort is not set
+
+	 C        10.255.2.0/30
+			   directly connected, Vlan102
+	 B I      172.16.2.0/24 [200/0]
+			   via VTEP 10.0.1.2 VNI 50002 router-mac 00:11:22:33:44:66 local-interface Vxlan1
+	 S        192.168.0.0/16 [1/0]
+			   via 10.255.2.2, Vlan102
+
+	leaf3#
+
+	```
 	```
 	localhost#sh ip interface brief
                                                                         Address
