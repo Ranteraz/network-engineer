@@ -4,35 +4,35 @@
 ![Топология сети](../images/lab8.png)
 
 ### Сводная таблица IP-адресации и сервисов фабрики (IP Plan & VNI Mapping)
-### Сводная таблица IP-адресации и сервисов фабрики (IP Plan & VNI Mapping)
 
-| Устройство | Интерфейс | IP-адрес / Маска | Назначение / Роль | Уровень | VRF | L3 VNI | Route Target (Import/Export) |
+| Устройство | Интерфейс | IP-адрес / Маска | Назначение / Роль | Уровень | VRF | L3 VNI | Route Target |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **spine1** | Loopback0 | `10.0.0.11/32` | BGP Router ID / Route Reflector | Overlay Control | default | - | - |
-| | Ethernet1 | `10.1.0.0/31` | Инфраструктурный линк к leaf1 (Eth1) | Underlay Transport | default | - | - |
-| | Ethernet2 | `10.1.0.2/31` | Инфраструктурный линк к leaf2 (Eth1) | Underlay Transport | default | - | - |
-| | Ethernet3 | `10.1.0.4/31` | Инфраструктурный линк к leaf3 (Eth1) | Underlay Transport | default | - | - |
-| **spine2** | Loopback0 | `10.0.0.12/32` | BGP Router ID / Route Reflector | Overlay Control | default | - | - |
-| | Ethernet1 | `10.1.0.6/31` | Инфраструктурный линк к leaf1 (Eth2) | Underlay Transport | default | - | - |
-| | Ethernet2 | `10.1.0.8/31` | Инфраструктурный линк к leaf2 (Eth2) | Underlay Transport | default | - | - |
-| | Ethernet3 | `10.1.0.10/31` | Инфраструктурный линк к leaf3 (Eth2) | Underlay Transport | default | - | - |
-| **leaf1** | Loopback0 | `10.0.0.1/32` | BGP Router ID / iBGP EVPN Peer | Overlay Control | default | - | - |
-| | Loopback1 | `10.0.1.1/32` | VTEP Source IP (VXLAN-шлюз) | Overlay Data | default | - | - |
-| | Ethernet1 | `10.1.0.1/31` | Линк к spine1 (Eth1) | Underlay Transport | default | - | - |
-| | Ethernet2 | `10.1.0.7/31` | Линк к spine2 (Eth1) | Underlay Transport | default | - | - |
-| | Vlan10 | `192.168.1.1/24` | Default Gateway для хоста VPC1 | Overlay Data | **VRF_A** | `50001` | **Exp:** 50001:50001, **Imp:** 50001:50001, 50002:50002 |
-| **VPC1** | eth0 | `192.168.1.2/24` | Конечное устройство Клиента А | Customer Data | **VRF_A** | - | - |
-| **leaf2** | Loopback0 | `10.0.0.2/32` | BGP Router ID / iBGP EVPN Peer | Overlay Control | default | - | - |
-| | Loopback1 | `10.0.1.2/32` | VTEP Source IP (VXLAN-шлюз) | Overlay Data | default | - | - |
-| | Ethernet1 | `10.1.0.3/31` | Линк к spine1 (Eth2) | Underlay Transport | default | - | - |
-| | Ethernet2 | `10.1.0.9/31` | Линк к spine2 (Eth2) | Underlay Transport | default | - | - |
-| | Vlan20 | `172.16.2.1/24` | Default Gateway для хоста VPC2 | Overlay Data | **VRF_B** | `50002` | **Exp:** 50002:50002, **Imp:** 50001:50001, 50002:50002 |
-| **VPC2** | eth0 | `172.16.2.2/24` | Конечное устройство Клиента Б | Customer Data | **VRF_B** | - | - |
-| **leaf3** | Loopback0 | `10.0.0.3/32` | BGP Router ID / iBGP EVPN Peer | Overlay Control | default | - | - |
-| | Loopback1 | `10.0.1.3/32` | VTEP Source IP (Border-шлюз) | Overlay Data | default | - | - |
-| | Ethernet1 | `10.1.0.5/31` | Линк к spine1 (Eth3) | Underlay Transport | default | - | - |
-| | Ethernet2 | `10.1.0.11/31` | Линк к spine2 (Eth3) | Underlay Transport | default | - | - |
-| | *Транзит* | `192.168.0.0/16`, `172.16.0.0/16` | Точка генерации и анонсирования чистых **Summary** префиксов | Transit Core | **VRF_A / VRF_B** | `50001`, `50002` | **VRF_A:** Imp 50002:50002, Exp 50001:50001 / **VRF_B:** Imp 50001:50001, Exp 50002:50002 |
+| **spine1** | Loopback0 | `10.0.0.11/32` | BGP Router ID / RR | Control | default | - | - |
+| | Ethernet1 | `10.1.0.0/31` | Линк к leaf1 (Eth1) | Transport | default | - | - |
+| | Ethernet2 | `10.1.0.2/31` | Линк к leaf2 (Eth1) | Transport | default | - | - |
+| | Ethernet3 | `10.1.0.4/31` | Линк к leaf3 (Eth1) | Transport | default | - | - |
+| **spine2** | Loopback0 | `10.0.0.12/32` | BGP Router ID / RR | Control | default | - | - |
+| | Ethernet1 | `10.1.0.6/31` | Линк к leaf1 (Eth2) | Transport | default | - | - |
+| | Ethernet2 | `10.1.0.8/31` | Линк к leaf2 (Eth2) | Transport | default | - | - |
+| | Ethernet3 | `10.1.0.10/31` | Линк к leaf3 (Eth2) | Transport | default | - | - |
+| **leaf1** | Loopback0 | `10.0.0.1/32` | BGP Router ID | Control | default | - | - |
+| | Loopback1 | `10.0.1.1/32` | VTEP Source IP | Data | default | - | - |
+| | Ethernet1 | `10.1.0.1/31` | Линк к spine1 (Eth1) | Transport | default | - | - |
+| | Ethernet2 | `10.1.0.7/31` | Линк к spine2 (Eth1) | Transport | default | - | - |
+| | Vlan10 | `192.168.1.1/24` | Gateway VPC1 | Data | **VRF_A** | `50001` | **Exp:** 50001:50001, **Imp:** 50001:50001, 50002:50002 |
+| **VPC1** | eth0 | `192.168.1.2/24` | Хост Клиента А | Customer | **VRF_A** | - | - |
+| **leaf2** | Loopback0 | `10.0.0.2/32` | BGP Router ID | Control | default | - | - |
+| | Loopback1 | `10.0.1.2/32` | VTEP Source IP | Data | default | - | - |
+| | Ethernet1 | `10.1.0.3/31` | Линк к spine1 (Eth2) | Transport | default | - | - |
+| | Ethernet2 | `10.1.0.9/31` | Линк к spine2 (Eth2) | Transport | default | - | - |
+| | Vlan20 | `172.16.2.1/24` | Gateway VPC2 | Data | **VRF_B** | `50002` | **Exp:** 50002:50002, **Imp:** 50001:50001, 50002:50002 |
+| **VPC2** | eth0 | `172.16.2.2/24` | Хост Клиента Б | Customer | **VRF_B** | - | - |
+| **leaf3** | Loopback0 | `10.0.0.3/32` | BGP Router ID | Control | default | - | - |
+| | Loopback1 | `10.0.1.3/32` | Border VTEP | Data | default | - | - |
+| | Ethernet1 | `10.1.0.5/31` | Линк к spine1 (Eth3) | Transport | default | - | - |
+| | Ethernet2 | `10.1.0.11/31` | Линк к spine2 (Eth3) | Transport | default | - | - |
+| | *Транзит* | `192.168.0.0/16`, `172.16.0.0/16` | Анонс Summary префиксов | Transit | **VRF_A/B** | `50001`, `50002` | **VRF_A:** Imp 50002:50002, Exp 50001:50001. **VRF_B:** Imp 50001:50001, Exp 50002:50002. |
+
 
 2. ### Настроки и характеристики Underlay/Overlay
 ## ISIS
