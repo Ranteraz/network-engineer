@@ -391,6 +391,48 @@
 	 *        RD: 10.0.0.1:50001 ip-prefix 192.168.1.0/24
 									 10.0.1.1              -       100     0       i Or-ID: 10.0.0.1 C-LST: 10.0.0.12
 	```
+### Firewell/Router	
+	```
+	localhost#sh ip interface brief
+                                                                        Address
+	Interface        IP Address         Status      Protocol         MTU    Owner
+	---------------- ------------------ ----------- ------------- --------- -------
+	Ethernet1        10.255.1.2/30      up          up              1500
+	Ethernet2        10.255.2.2/30      up          up              1500
+	Management1      unassigned         up          up              1500
+
+	localhost#show ip route
+
+	VRF: default
+	Source Codes:
+		   C - connected, S - static, K - kernel,
+		   O - OSPF, O IA - OSPF inter area, O E1 - OSPF external type 1,
+		   O E2 - OSPF external type 2, O N1 - OSPF NSSA external type 1,
+		   O N2 - OSPF NSSA external type2, O3 - OSPFv3,
+		   O3 IA - OSPFv3 inter area, O3 E1 - OSPFv3 external type 1,
+		   O3 E2 - OSPFv3 external type 2,
+		   O3 N1 - OSPFv3 NSSA external type 1,
+		   O3 N2 - OSPFv3 NSSA external type2, B - Other BGP Routes,
+		   B I - iBGP, B E - eBGP, R - RIP, I L1 - IS-IS level 1,
+		   I L2 - IS-IS level 2, A B - BGP Aggregate,
+		   A O - OSPF Summary, NG - Nexthop Group Static Route,
+		   V - VXLAN Control Service, M - Martian,
+		   DH - DHCP client installed default route,
+		   DP - Dynamic Policy Route, L - VRF Leaked,
+		   G  - gRIBI, RC - Route Cache Route,
+		   CL - CBF Leaked Route
+
+	Gateway of last resort is not set
+
+	 C        10.255.1.0/30
+			   directly connected, Ethernet1
+	 C        10.255.2.0/30
+			   directly connected, Ethernet2
+	 S        172.16.2.0/24 [1/0]
+			   via 10.255.2.1, Ethernet2
+	 S        192.168.1.0/24 [1/0]
+			   via 10.255.1.1, Ethernet1
+	```
 4. ## Проверка прохождения трафика
 ```
 	VPCS1> sh ip
@@ -406,9 +448,18 @@
 
 	VPCS1> ping 172.16.2.2
 
-	84 bytes from 172.16.2.2 icmp_seq=1 ttl=62 time=61.845 ms
-	84 bytes from 172.16.2.2 icmp_seq=2 ttl=62 time=14.397 ms
-	84 bytes from 172.16.2.2 icmp_seq=3 ttl=62 time=52.641 ms
-	84 bytes from 172.16.2.2 icmp_seq=4 ttl=62 time=51.501 ms
-	84 bytes from 172.16.2.2 icmp_seq=5 ttl=62 time=35.652 ms
+	84 bytes from 172.16.2.2 icmp_seq=1 ttl=59 time=145.452 ms
+	84 bytes from 172.16.2.2 icmp_seq=2 ttl=59 time=103.711 ms
+	84 bytes from 172.16.2.2 icmp_seq=3 ttl=59 time=141.197 ms
+	84 bytes from 172.16.2.2 icmp_seq=4 ttl=59 time=138.700 ms
+	84 bytes from 172.16.2.2 icmp_seq=5 ttl=59 time=124.946 ms
+
+	VPCS1> trace 172.16.2.2
+	trace to 172.16.2.2, 8 hops max, press Ctrl+C to stop
+	 1   192.168.1.1   16.817 ms  9.282 ms  3.652 ms
+	 2   10.255.1.1   65.559 ms  49.210 ms  28.941 ms
+	 3   10.255.1.2   65.009 ms  51.886 ms  77.111 ms
+	 4   10.255.2.1   36.110 ms  46.250 ms  46.170 ms
+	 5     *  *  *
+	 6   *172.16.2.2   140.511 ms (ICMP type:3, code:3, Destination port unreachable)
 ```
