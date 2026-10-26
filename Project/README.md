@@ -746,13 +746,13 @@ B>  192.168.1.0/24 [200/0] via 10.255.0.11 (recursive), weight 1, 03:26:08
 
 <hp5> Spine1 </hp5><br>
 ![Spine1](../images/s1.PNG)
-<hp5> Spine2 </hp5><br>
+<br><hp5> Spine2 </hp5><br>
 ![Spine2](../images/s2.PNG)
-<hp5> Leaf1 </hp5><br>
+<br><hp5> Leaf1 </hp5><br>
 ![Leaf1](../images/lf1.PNG)
-<hp5> Leaf2 </hp5><br>
+<br><hp5> Leaf2 </hp5><br>
 ![Leaf2](../images/lf2.PNG)
-<hp5> Leaf1 </hp5><br>
+<br><hp5> Leaf1 </hp5><br>
 ![Leaf3](../images/lf3.PNG)
 
 #### 📊 Полные логи непрерывного тестирования (ICMP Ping)
